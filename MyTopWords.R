@@ -9,11 +9,7 @@ library(tm)
 library(wordcloud)
 
 # get autorization
-api_key="YBsbh0WkchdhsKONtGYvUhRi1"
-api_secret="pBlNqKOi1VzFOc9nRgZpzwO4lPWWnzHbgXHng5M9DpEnqFwztq"
-acces_token="1004279869-qdzCaot4PUuBcFxW3ejjeGqKL2luuWBF1gZJAmd"
-acces_token_secret="2fyesoH83Gw4tXwSCvQSgI2B74eFdHtfxO3U2y5y187lM"
-setup_twitter_oauth(api_key,api_secret,acces_token,acces_token_secret )
+
 #tweets=userTimeline("_musicalnote",2000)
 
 Locs=availableTrendLocations()
