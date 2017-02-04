@@ -6,7 +6,7 @@ Ola_tweets=searchTwitter("OlaCabs",n=2000,lan="en")
 TaxiForSure_tweets=searchTwitter("TaxiForSure",n=2000,lan="en")
 Uber_tweets=searchTwitter("Uber_Delhi",n=2000,lan="en")
 
-#check length
+# check length
 length(Meru_tweets)
 length(Ola_tweets)
 length(TaxiForSure_tweets)
@@ -86,6 +86,43 @@ length(Uber_tweetsCleaned)
 
 #Estimating sentiment A
 opinion.lexicon.pos=scan('/home/cris/mrcrstnherediagmez@gmail.com/Countwords/data/opinion-lexicon-English/positive-words.txt',what = 'character',comment.char = ';')
+opinion.lexicon.neg=scan('/home/cris/mrcrstnherediagmez@gmail.com/Countwords/data/opinion-lexicon-English/negative-words.txt',what = 'character',comment.char = ';')
+
+#we can add other terms (based on our reqeriments)
+pos.words=c(opinion.lexicon.pos,'upgrade')
+neg.words=c(opinion.lexicon.neg,'wait','waiting','wtf','cancellation')
+
+
+#now we create a function to score a sentiment (computes raw sentiment based on simple matching algorithm)
+getSentimentScore=function(sentences,words.positive,words.negative){
+  require(plyr)
+  require(stringr)
+  
+  scores=sapply(sentences,function(sentence,words.positive,words.negative){
+    #remove digits,punc and control chars
+    sentence=gsub('[[:cntrl:]]','',gsub('[[:punct:]]','',gsub('\\d+','',sentence)))
+    #convert all to lower case
+    sentence=tolower(sentence)
+    #split each sentence by space delimiter
+    words=unlist(strsplit(sentence,'\\s+'))
+    #get the boolean match of each words with the positive and negative opinion lexicon
+    pos.matches=!is.na(match(words,words.positive))
+    neg.matches=!is.na(match(words,words.negative))
+    #get the score as total positive sentiment minus the total negatives
+    score=sum(pos.matches)-sum(neg.matches)
+    
+    return(score)
+  },words.positive,words.negative)
+  
+  #return data frame with respective sentence and score
+  return(data.frame(text=sentences,score=scores))
+}
+
+#apply preceding to each corpus
+#MeruRes=getSentimentScore(Meru_tweetsCleaned,pos.words,neg.words)
+#OlaRes=getSentimentScore(Ola_tweetsCleaned,pos.words,neg.words)
+TaxiForSureRes=getSentimentScore(TaxiForSure_tweetsCleaned,pos.words,neg.words)
+UberRes=getSentimentScore(Uber_tweetsCleaned,pos.words,neg.words)
 
 
 
