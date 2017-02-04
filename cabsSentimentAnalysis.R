@@ -119,11 +119,18 @@ getSentimentScore=function(sentences,words.positive,words.negative){
 }
 
 #apply preceding to each corpus
-#MeruRes=getSentimentScore(Meru_tweetsCleaned,pos.words,neg.words)
-#OlaRes=getSentimentScore(Ola_tweetsCleaned,pos.words,neg.words)
+MeruRes=getSentimentScore(Meru_tweetsCleaned,pos.words,neg.words)
+OlaRes=getSentimentScore(Ola_tweetsCleaned,pos.words,neg.words)
 TaxiForSureRes=getSentimentScore(TaxiForSure_tweetsCleaned,pos.words,neg.words)
 UberRes=getSentimentScore(Uber_tweetsCleaned,pos.words,neg.words)
 
+#since not all samples are the same size, lets compute mean and sd
+MeruMean=mean(MeruRes$score)
+OlaMean=mean(OlaRes$score)
+TaxiForSureMean=mean(TaxiForSureRes$score)
+UberMean=mean(UberRes$score)
 
-
-
+MeruSd=sd(MeruRes$score)
+OlaSd=sd(OlaRes$score)
+TaxiForSureSd=sd(TaxiForSureRes$score)
+UberSd=sd(UberRes$score)
