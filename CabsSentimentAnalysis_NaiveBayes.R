@@ -109,3 +109,43 @@ OlaEmotion[is.na(OlaEmotion)]="unknown"
 TaxiForSureEmotion[is.na(TaxiForSureEmotion)]="unknown"
 UberEmotion[is.na(UberEmotion)]="unknown"
 
+
+
+#classifying tweet polarity(positive, negative or neutral)
+
+Meru_tweetsClassPol=classify_polarity(Meru_tweetsCleaned,algorithm = "bayes")
+Ola_tweetsClassPol=classify_polarity(Ola_tweetsCleaned,algorithm = "bayes")
+TaxiForSureClassPol=classify_polarity(TaxiForSure_tweetsCleaned,algorithm = "bayes")
+Uber_tweetsClassPol=classify_polarity(Uber_tweetsCleaned,algorithm = "bayes")
+
+#we fetch polarity ctegory best_fit for analysis purposes
+MeruPol=Meru_tweetsClassPol[,4]
+OlaPol=Ola_tweetsClassPol[,4]
+TaxiForSurePol=TaxiForSureClassPol[,4]
+UberPol=Uber_tweetsClassPol[,4]
+
+#create data frame with results above
+MeruSentimentDataFrame=data.frame(text=Meru_tweetsCleaned,emotion=MeruEmotion,polarity=MeruPol,stringsAsFactors = FALSE)
+OlaSentimentDataFrame=data.frame(text=Ola_tweetsCleaned,emotion=OlaEmotion,polarity=OlaPol,stringsAsFactors = FALSE)
+TaxiForSureSentimentDataFrame=data.frame(text=TaxiForSure_tweetsCleaned,emotion=TaxiForSureEmotion,polarity=TaxiForSurePol,stringsAsFactors = FALSE)
+UberSentimentDataFrame=data.frame(text=Uber_tweetsCleaned,emotion=UberEmotion,polarity=UberPol,stringsAsFactors = FALSE)
+
+#rearrange data inside the frame by sorting it
+MeruSentimentDataFrame=within(MeruSentimentDataFrame,emotion<-factor(emotion,levels = names(sort(table(emotion),decreasing = TRUE))))
+OlaSentimentDataFrame=within(OlaSentimentDataFrame,emotion<-factor(emotion,levels = names(sort(table(emotion),decreasing = TRUE))))
+TaxiForSureSentimentDataFrame=within(TaxiForSureSentimentDataFrame,emotion<-factor(emotion,levels = names(sort(table(emotion),decreasing = TRUE))))
+UberSentimentDataFrame=within(UberSentimentDataFrame,emotion<-factor(emotion,levels = names(sort(table(emotion),decreasing = TRUE)))) 
+  
+#declare potting function
+plotSentiments1=function(sentiment_dataframe,title){
+  library(ggplot2)
+  ggplot(sentiment_dataframe,aes(x=emotion))+geom_bar(aes(y=..count..,fill=emotion))+
+    scale_fill_brewer(palette="Dark2")+
+    ggtitle(title) +
+    theme(legend.position='right')+ylab('Number of tweets')+xlab('Emotion categories')
+}
+
+plotSentiments1(MeruSentimentDataFrame,'Sentiment Analysis of Tweets about Merucabs')
+
+
+install.packages("/home/cris/Descargas/tibble_1.2.tar.gz",repos=NULL,type="source")
