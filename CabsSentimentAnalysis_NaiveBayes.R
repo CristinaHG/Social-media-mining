@@ -92,7 +92,7 @@ install.packages("/home/cris/Descargas/sentiment_0.2.tar.gz",repos=NULL,type="so
 library(sentiment)
 # classify emotion function returns an object of class data frame with seven columns (anger,disgust,fear,joy,sadness,
 # surprise,best_fit) and one row for each document
-MeruTweetsClassEmo=classify_emotion(Meru_tweetsCleaned,algorithm = "bayes",prior = 1)
+MeruTweetsClassEmo=sentiment::classify_emotion(Meru_tweetsCleaned,algorithm = "bayes",prior = 1)
 OlaTweetsClassEmo=classify_emotion(Ola_tweetsCleaned,algorithm = "bayes",prior = 1)
 TaxiForSureTweetsClassEmo=classify_emotion(TaxiForSure_tweetsCleaned,algorithm = "bayes",prior=1)
 Uber_tweetsClassEmo=classify_emotion(Uber_tweetsCleaned,algorithm = "bayes",prior=1)
@@ -145,7 +145,54 @@ plotSentiments1=function(sentiment_dataframe,title){
     theme(legend.position='right')+ylab('Number of tweets')+xlab('Emotion categories')
 }
 
-plotSentiments1(MeruSentimentDataFrame,'Sentiment Analysis of Tweets about Merucabs')
+plotSentiments2=function(sentiment_dataframe,title){
+  ggplot(sentiment_dataframe,aes(x=polarity))+
+    geom_bar(aes(y=..count..,fill=polarity))+
+    scale_fill_brewer(palette = "Dark2")+
+    ggtitle(title)+
+    theme(legend.position = 'right')+ylab('Number of tweets')+xlab('Polarity categories')
+}
+
+plotSentiments1(TaxiForSureSentimentDataFrame,'Sentiment Analysis of Tweets about Taxi for sure')
+plotSentiments2(TaxiForSureSentimentDataFrame,'Polarity Analysis of Tweets about Taxi for sure')
+
+# install.packages("/home/cris/Descargas/tibble_1.2.tar.gz",repos=NULL,type="source")
+
+removeCustomeWords=function(TweetsCleaned){
+  for(i in 1:length(TweetsCleaned)){
+    TweetsCleaned[i]<-tryCatch({
+      TweetsCleaned[i]=removeWords(TweetsCleaned[i],c(stopwords("english"),"care","guys","can","dis","didn","guy","booked",
+                                                      "plz"))
+      TweetsCleaned[i]
+    }, error=function(cond){
+      TweetsCleaned[i]
+    },warnings=function(cond){
+      TweetsCleaned[i]
+    })
+  }
+  return(TweetsCleaned)
+}
 
 
-install.packages("/home/cris/Descargas/tibble_1.2.tar.gz",repos=NULL,type="source")
+getWordCloud=function(sentiment_dataframe,TweetsCleaned,Emotion){
+  emos=levels(factor(sentiment_dataframe$emotion))
+  n_emos=length(emos)
+  emo.docs=rep("",n_emos)
+  TweetsCleaned=removeCustomeWords(TweetsCleaned)
+  
+  for( i in 1:n_emos){
+    emo.docs[i]=paste(TweetsCleaned[Emotion==emos[i]],collapse = " ")
+  }
+  corpus=Corpus(VectorSource(emo.docs))
+  tdm=TermDocumentMatrix(corpus)
+  tdm=as.matrix(tdm)
+  colnames(tdm)=emos
+  require(wordcloud)
+  suppressWarnings(comparison.cloud(tdm,colors=brewer.pal(n_emos,"Dark2"),scale=c(3,.5),random.order=FALSE,title.size=1.5))
+  
+}
+
+
+getWordCloud(TaxiForSureSentimentDataFrame,TaxiForSure_tweetsCleaned,TaxiForSureEmotion)
+
+
