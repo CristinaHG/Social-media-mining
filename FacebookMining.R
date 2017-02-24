@@ -65,3 +65,25 @@ page[which.max(page$likes_count),]
 pageRecent<-page[which(page$created_time> "2017-01-01"),]
 top<-pageRecent[order(- pageRecent$likes_count),]
 head(top,n=10)
+
+
+# Influencers based on a single post:
+# get the ID of most recent post
+post_id<-head(page$id,n=1)
+# get 1000 comments and likes from that post
+post<- getPost(post_id,token,n=1000,likes=TRUE,comments = TRUE)
+# display two first comments
+head(post$comments,n=2)
+# copy all comments for that post
+samppost<-post$comments
+
+library(sqldf)
+# copy commments of that post
+comments<-post$comments
+# check who is the user with maximun likes with a query
+influentialusers<-sqldf("select from_name, sum(likes_count) as totlikes from comments group by from_name")
+head(influentialusers)
+influentialusers$totlikes<-as.numeric(influentialusers$totlikes)
+# sort uers based on the number of likes they have
+top<-influentialusers[order(- influentialusers$totlikes), ]
+head(top)
