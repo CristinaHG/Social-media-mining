@@ -4,7 +4,7 @@ install.packages('Rfacebook')
 library(Rfacebook)
 
 #generating short lasting token
-source('/home/cris/mrcrstnherediagmez@gmail.com/Countwords/autenthicate.R')
+source('/home/cris/mrcrstnherediagmez@gmail.com/Countwords/autenthicateFB.R')
 
 frieds<-getFriends(token,simplify = TRUE)
 friends_data<-getUsers(frieds$id,token,private_info = TRUE)
@@ -86,4 +86,30 @@ head(influentialusers)
 influentialusers$totlikes<-as.numeric(influentialusers$totlikes)
 # sort uers based on the number of likes they have
 top<-influentialusers[order(- influentialusers$totlikes), ]
+head(top)
+
+
+# Finding influencers in FB based on multiple post
+
+# get the top 100 post from the page
+post_id<-head(page$id,n=100)
+head(post_id)
+# Convert to matrix to make it easier to access the comments based on their position
+post_id<-as.matrix(post_id)
+# initialize data frame as null
+allcomments<-""
+
+# collect comments from all the 100 post
+for(i in 1:nrow(post_id)){
+  # get upto 1000 comments for each post
+  post<-getPost(post_id[i,],token,n=1000,likes=TRUE,comments = TRUE)
+  comments<-post$comments
+  # append the comments to a single df
+  allcomments<-rbind(allcomments,comments)
+}
+
+#consolidating like for each user
+influentialusers<-sqldf("select from_name,sum(likes_count) as totlikes from allcomments group by from_name")
+influentialusers$totlikes<-as.numeric(influentialusers$totlikes)
+top<-influentialusers[order(-influentialusers$totlikes),]
 head(top)
