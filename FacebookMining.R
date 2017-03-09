@@ -131,7 +131,24 @@ aggregate.metric<-function(metric){
   return(m)
 }
 
+# extract post from page
+page<-getPage("elbauldelprogramador",token,n=500)
+page$datetime<-format.facebook.date(page$created_time)
+page$month<-format(page$datetime,"%Y-%m")
 
+# aggreate number of likes, comments and shares on monthly basis
+df.list<-lapply(c("likes","comments","shares"),aggregate.metric)
+df<-do.call(rbind,df.list)
+
+library(ggplot2)
+library(scales)
+ggplot(df,aes(x = month, y = x,group = metric)) +
+  geom_line(aes(color = metric)) +scale_x_date(date_breaks = "1 months",labels=date_format("%Y-%m"))+
+theme_bw()+
+  ylab("mean per post")+
+  xlab("months/year")+
+  ggtitle("Facebook page performance for The programmer chest")
+#ggsave()
 
 
 
