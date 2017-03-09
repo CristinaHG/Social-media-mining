@@ -113,3 +113,26 @@ influentialusers<-sqldf("select from_name,sum(likes_count) as totlikes from allc
 influentialusers$totlikes<-as.numeric(influentialusers$totlikes)
 top<-influentialusers[order(-influentialusers$totlikes),]
 head(top)
+
+# elbaulP<-getPage("elbauldelprogramador",token,n=500)
+
+# Measuring CTR performance for a page
+format.facebook.date<-function(datestring){
+  date<-as.POSIXct(datestring,format="%Y-%m-%dT%H:%M: %S+0000",tz="GMT")
+}
+
+# aggregate data on a monthly basis
+aggregate.metric<-function(metric){
+  m<-aggregate(page[[paste0(metric, "_count")]],
+               list(month=page$month),
+               mean)
+  m$month<-as.Date(paste0(m$month,"-15"))
+  m$metric<-metric
+  return(m)
+}
+
+
+
+
+
+
