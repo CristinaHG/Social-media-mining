@@ -19,3 +19,34 @@ allcomments$chars<-nchar(allcomments$message)
 allcomments$url<-""
 allcomments$url<-grepl(".com",allcomments$message)
 allcomments$spam<-""
+
+# create datasets
+train<-allcomments[1:100,]
+test<-allcomments[101:nrow(allcomments),]
+write.csv(train,"comment-train.csv")
+write.csv(test,"comment-test.csv")
+
+train<-read.csv("comment-train.csv")
+test<-read.csv("comment-test.csv")
+
+spamUrls<- (which(train$url))
+emptyMessages<- which(train$message=="")
+
+for(i in spamUrls){
+  train$spam[i]<-1
+}
+
+for(j in emptyMessages){
+  train$spam[j]<-1
+}
+
+
+# train$spam<-lapply(seq_along(1:nrow(train)),function(x){
+#  train[x,]
+#  if(x %in% spamUrls){
+#    train[x,]$spam<-1
+#  }
+# })
+
+
+
