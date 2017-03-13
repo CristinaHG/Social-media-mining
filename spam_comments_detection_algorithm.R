@@ -12,4 +12,10 @@ for(i in 1:nrow(post_id)){
   comments<-post$comments
   allcomments<-rbind(allcomments,comments)
 }
+# look for number of chars and urls in comments
 allcomments<-as.data.frame(allcomments)
+allcomments$chars<-""
+allcomments$chars<-nchar(allcomments$message)
+allcomments$url<-""
+allcomments$url<-grepl(".com",allcomments$message)
+allcomments$spam<-""
