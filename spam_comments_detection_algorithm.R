@@ -23,15 +23,11 @@ allcomments$spam<-""
 # create datasets
 train<-allcomments[1:100,]
 test<-allcomments[101:nrow(allcomments),]
-write.csv(train,"comment-train.csv")
-write.csv(test,"comment-test.csv")
-
-train<-read.csv("comment-train.csv")
-test<-read.csv("comment-test.csv")
 
 spamUrls<- (which(train$url))
 emptyMessages<- which(train$message=="")
 
+train$spam<-0
 for(i in spamUrls){
   train$spam[i]<-1
 }
@@ -39,6 +35,19 @@ for(i in spamUrls){
 for(j in emptyMessages){
   train$spam[j]<-1
 }
+
+write.csv(train,"comment-train.csv")
+write.csv(test,"comment-test.csv")
+
+train<-read.csv("comment-train.csv")
+test<-read.csv("comment-test.csv")
+
+newTrain<-train[,c("likes_count","chars","url","spam")]
+newTest<-test[,c("likes_count","chars","url","spam")]
+
+glm.out=glm(spam~ ., family = gaussian(identity),data=newTrain)
+prediction<-predict(glm.out,newTest,type="response")
+newTest$spam<-prediction
 
 
 # train$spam<-lapply(seq_along(1:nrow(train)),function(x){
