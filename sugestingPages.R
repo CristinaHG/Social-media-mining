@@ -35,4 +35,5 @@ data<-read.transactions("/home/cris/mrcrstnherediagmez@gmail.com/Countwords/forR
 inspect(data)
 
 # generate rules
-rules<-apriori(data,parameter = list(sup=0.2,conf=0.001,target="rules",minlen=3,maxlen=5))
+rules<-apriori(data,parameter = list(sup=0.25,conf=0.001,target="rules",minlen=3,maxlen=5))
+inspect(rules)
