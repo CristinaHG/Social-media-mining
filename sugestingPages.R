@@ -21,4 +21,6 @@ friend6$user<-friends$name[6] # not aviable
 # combine friends likes using rbind
 friendlikedata<-rbind(friend2,friend3,friend4,friend5)
 
+# select just the username and pages they like
+forRecc<-friendlikedata[,c("user","id")]
 
