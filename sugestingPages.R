@@ -18,3 +18,7 @@ friend4$user<-friends$name[4]
 friend5$user<-friends$name[5]
 friend6$user<-friends$name[6] # not aviable 
 
+# combine friends likes using rbind
+friendlikedata<-rbind(friend2,friend3,friend4,friend5)
+
+
