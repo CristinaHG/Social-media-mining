@@ -23,4 +23,14 @@ friendlikedata<-rbind(friend2,friend3,friend4,friend5)
 
 # select just the username and pages they like
 forRecc<-friendlikedata[,c("user","id")]
+write.csv(forRecc, "/home/cris/mrcrstnherediagmez@gmail.com/Countwords/forRecc.csv",row.names = FALSE,col.names = NA)
+
+# install arules
+install.packages("arules")
+library(arules)
+
+# read the data
+data<-read.transactions("/home/cris/mrcrstnherediagmez@gmail.com/Countwords/forRecc.csv",rm.duplicates = FALSE,format ="single",sep = ",",cols = c(1,2))
+# inspect data (users and pages it likes)
+inspect(data)
 
