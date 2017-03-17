@@ -10,4 +10,11 @@ friend4<-getLikes("745947288828056",n=100,token)
 friend5<-getLikes("562214867255590",n=100,token)
 friend6<-getLikes("1697735810486543",n=100,token) # not aviable
 
+# add column with names to the likes
+friend1$user<-friends$name[1] # not aviable 
+friend2$user<-friends$name[2]
+friend3$user<-friends$name[3]
+friend4$user<-friends$name[4]
+friend5$user<-friends$name[5]
+friend6$user<-friends$name[6] # not aviable 
 
