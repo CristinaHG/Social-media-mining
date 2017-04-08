@@ -47,7 +47,14 @@ numFollowing<-length(myFollowers$content)
  activeusers<-read.csv("ActiveUsers.csv")
  
  # make date format supported by R
- date.formated<-function(datestring){
+ date.format<-function(datestring){
    date<-as.POSIXct(datestring,format="%Y-%m-%dT%H:%M:%SZ",tz="GMT")
  }
+ 
+ #update dates with new format
+ activeusers$created_at<-date.format(activeusers$created_at)
+ activeusers$updated_at<-date.format(activeusers$updated_at)
+ activeusers$pushed_at<-date.format(activeusers$pushed_at)
+ 
+ 
  
