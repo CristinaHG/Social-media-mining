@@ -117,5 +117,17 @@ numFollowing<-length(myFollowers$content)
  pie+coord_polar(theta = "y")
  ggsave(file="/home/cris/mrcrstnherediagmez@gmail.com/Countwords/issues_chart.png") 
  
+ # looking for the trend on updating repos
+ trendingdata<-activesubset[c("updated_at","id")]
+ trendingdata$updated_at<-as.POSIXct(strptime(trendingdata$updated_at,"%Y-%m-%d")) 
+ tabledata<-table(trendingdata$updated_at) 
+ tabledata<-as.data.frame(tabledata)
+ colnames(tabledata)<-c("Date","Repositories")
+ tabledata$Date<-as.Date(tabledata$Date)
+ tabledata<-tail(tabledata,100) 
  
+ # plot
+ q<-ggplot(data=tabledata,aes(x=Date,y=Repositories,group=1))+geom_line()+geom_point()
+ q+theme(axis.text.x = element_text(angle = 90,hjust = 1))
+ ggsave(file="/home/cris/mrcrstnherediagmez@gmail.com/Countwords/pdating_trending.png") 
  
