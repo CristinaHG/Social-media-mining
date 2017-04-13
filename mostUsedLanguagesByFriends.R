@@ -131,3 +131,54 @@ numFollowing<-length(myFollowers$content)
  q+theme(axis.text.x = element_text(angle = 90,hjust = 1))
  ggsave(file="/home/cris/mrcrstnherediagmez@gmail.com/Countwords/pdating_trending.png") 
  
+ 
+ # comparing users with a heat map
+ colnames(activesubset)
+ library(sqldf)
+ newdata<-activesubset[c("id","full_name","size","watchers_count","forks_count","open_issues_count","desclen","daycreated","dayupdated","daypushed")]
+ sd<-sqldf("select full_name, count(id), avg(size), sum(watchers_count), count(forks_count), count(open_issues_count), avg(desclen), avg(daycreated), avg(dayupdated),avg(daypushed) from newdata group by full_name")
+ 
+ # give descriptive colnames
+ colnames(sd)<-c("Name","Repositories","AvgSize","Watchers","Forks","Issues","Avg_descriptionLenght","Avg_daysSinceCreated","Avg_daysSinceUpdated","Avg_daysSincePushed")
+ row.names(sd)<-sd$Name
+ # just take the numeric
+ sd<-sd[,2:10]
+ sd<-as.matrix(sd)
+ heat.map<-heatmap(sd,Rowv = NA,Colv = NA,col=cm.colors(256),scale = "column",margins=c(11,8))
+ dev.copy(png,filename="/home/cris/mrcrstnherediagmez@gmail.com/Countwords/friendsHeatmap.png",width=600,height=875)
+
+ 
+ # correlation analysis
+ library(ggplot2)
+ cor(sd$Forks,sd$Watchers)
+ ggplot(sd,aes(x=Forks,y=Watchers))+
+   geom_point(shape=1)+
+   geom_smooth(method = lm)
+ 
+ cor(sd$Avg_daysSinceCreated,sd$Avg_daysSincePushed)
+ ggplot(sd,aes(x=Avg_daysSinceCreated,y=Avg_daysSincePushed))+
+   geom_point(shape=1)+
+   geom_smooth(method = lm)
+ 
+ # using loess method(by default)
+ ggplot(sd,aes(x=Avg_daysSinceCreated,y=Avg_daysSincePushed))+
+   geom_point(shape=1)+
+   geom_smooth()
+ 
+ 
+ # correlatin on segmented data
+ newdataS<-activesubset[c("id","full_name","size","watchers_count","forks_count","open_issues_count","desclen","daycreated","dayupdated","daypushed","has_issues")]
+ sdS<-sqldf("select full_name, count(id), avg(size), sum(watchers_count), count(forks_count), count(open_issues_count), avg(desclen), avg(daycreated), avg(dayupdated),avg(daypushed),sum(has_issues) from newdataS group by full_name")
+ 
+ # give descriptive colnames
+ colnames(sdS)<-c("Name","Repositories","AvgSize","Watchers","Forks","Issues","Avg_descriptionLenght","Avg_daysSinceCreated","Avg_daysSinceUpdated","Avg_daysSincePushed","IssuesF")
+ #sdS$IssuesF<-as.factor(sdS$IssuesF)
+ sdS$IssuesF[sdS$Issues<10]=0
+ sdS$IssuesF[sdS$Issues>=10]=1
+ sdS$IssuesF<-as.factor(sdS$IssuesF)
+ 
+ ggplot(sdS,aes(x=Avg_daysSinceCreated,y=Avg_daysSincePushed,color=IssuesF))+
+   geom_point(shape=1)+
+   geom_smooth(method=lm)
+ 
+ # correlation between programming langugages
