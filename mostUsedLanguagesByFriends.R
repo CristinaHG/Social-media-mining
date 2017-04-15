@@ -184,8 +184,8 @@ numFollowing<-length(myFollowers$content)
  # correlation between programming langugages
  library(reshape2)
  ldata<-activesubset[c("full_name","language")]
- pivoting<-as.data.frame(ldata)
- pivotdata<-dcast(pivoting,full_name ~ language, fun.aggregate=length, value.var="language")
+ pivoting<-data.table(ldata)
+ pivotdata<-dcast.data.table(pivoting,full_name ~ language, fun.aggregate=length, value.var="language")
  pivotdata<-as.data.frame(pivotdata)
  pivotdata<-pivotdata[,2:ncol(pivotdata)]
  cormatrix<-cor(pivotdata)
@@ -223,4 +223,8 @@ numFollowing<-length(myFollowers$content)
  resultcor<-cbind(r0,r1)
  colnames(resultcor)<-c("Date","Corr")
  resultcor<-tail(resultcor,75)
+ 
+ q<-ggplot(data = resultcor,aes(x=Date,y=Corr,group=1))+
+   geom_line()+geom_point()
+ q+theme(axis.text.x = element_text(angle=90,hjust=1))
  
