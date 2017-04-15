@@ -182,3 +182,45 @@ numFollowing<-length(myFollowers$content)
    geom_smooth(method=lm)
  
  # correlation between programming langugages
+ library(reshape2)
+ ldata<-activesubset[c("full_name","language")]
+ pivoting<-as.data.frame(ldata)
+ pivotdata<-dcast(pivoting,full_name ~ language, fun.aggregate=length, value.var="language")
+ pivotdata<-as.data.frame(pivotdata)
+ pivotdata<-pivotdata[,2:ncol(pivotdata)]
+ cormatrix<-cor(pivotdata)
+ 
+ diag(cormatrix)<-NA
+ cormatrix[upper.tri(cormatrix)]<-NA
+ finalcor<-melt(cormatrix)
+ filteredcordata<-finalcor[which(finalcor$value>0.4),]
+ 
+ # getting correlation trend
+ mdata<-activesubset[c("created_at","watchers_count","forks_count")]
+ # convert created_at columnto R supported format
+ mdata$created_at<-as.POSIXct(strptime(mdata$created_at,"%Y-%m-%d"))
+ mdata$watchers_count<-as.numeric(mdata$watchers_count)
+ mdata$forks_count<-as.numeric(mdata$forks_count) 
+ 
+ library(data.table)
+ DT<-data.table(mdata)
+ m1<-DT[,sum(forks_count),by=created_at]
+ m2<-DT[,sum(watchers_count),by=created_at]
+ m1<-as.data.frame(m1)
+ m2<-as.data.frame(m2) 
+ mdata<-merge(m1,m2,by="created_at")
+ colnames(mdata)<-c("Date","forks","watchers")
+ 
+ mdata1<-tail(mdata,300)
+ rownames(mdata1)<-mdata1$Date
+ mdata1<-mdata1[, -1]
+ 
+ library(zoo)
+ r1<-rollapplyr(mdata1,30,function(x) cor(x[,1],x[,2]),by.column=FALSE)
+ r1<-as.data.frame(r1)  
+ r0<-tail(mdata$Date,271)
+ r0<-as.data.frame(r0)
+ resultcor<-cbind(r0,r1)
+ colnames(resultcor)<-c("Date","Corr")
+ resultcor<-tail(resultcor,75)
+ 
