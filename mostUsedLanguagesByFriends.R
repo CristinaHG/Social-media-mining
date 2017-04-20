@@ -4,7 +4,7 @@ library(github)
 
 # get my followers
 myFollowers<-get.my.followers(ctx)
-# get number of mmy followers
+# get number of my followers
 numFollowing<-length(myFollowers$content)
 
 #creating a dataset with my followers
